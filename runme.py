@@ -1,4 +1,5 @@
 from QWD import Q9, Q56
+from QWRY import Q4_Gibbs, Q4_plot
 
 if __name__ == '__main__':
     

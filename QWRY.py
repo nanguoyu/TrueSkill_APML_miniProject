@@ -67,7 +67,7 @@ def recoveryGaussian(mu1, mu2, sigma1, sigma2, sigmat, t):
     return ga
 
 
-def burnIn(burnInNum, S1, S2, E_S1, E_S2, mu=25):
+def burnIn(burnInNum, S1, S2, E_S1, E_S2, mu=25, K=100):
     # Plot the samples of the posterior distributions
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 3))
     ax1.plot(S1)
@@ -84,7 +84,7 @@ def burnIn(burnInNum, S1, S2, E_S1, E_S2, mu=25):
     fig.savefig('burnIn.png')
 
 
-def histo(burnInNum, E_S1, E_S2, Var_S1, Var_S2):
+def histo(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K):
     e_s1, e_s2, v_s1, v_s2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(
         Var_S2[burnInNum:])
 
@@ -108,7 +108,7 @@ def histo(burnInNum, E_S1, E_S2, Var_S1, Var_S2):
     fig.savefig('histo.png')
 
 
-def prior_n_posterior(E_S1, E_S2, Var_S1, Var_S2, mu=25, sigma=8.3):
+def prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, mu=25, sigma=8.3, K=100):
     e_s1, e_s2, v_s1, v_s2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(
         Var_S2[burnInNum:])
     # Plot s1 prior
@@ -141,15 +141,15 @@ def Q4_Gibbs(K, sigma_t=0.3):
     return S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T
 
 
-def Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2):
-    burnIn(burnInNum, S1, S2, E_S1, E_S2)
-    histo(burnInNum, E_S1, E_S2, Var_S1, Var_S2)
-    prior_n_posterior(E_S1, E_S2, Var_S1, Var_S2)
+def Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K):
+    burnIn(burnInNum, S1, S2, E_S1, E_S2, K)
+    histo(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
+    prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, K)
 
 
 # if __name__ == '__main__':
 #     K = 500  # tune the number of samples
 #     S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T = Q4_Gibbs(K, 1)
 
-#     burnInNum = 120  # the number of burn-in
-#     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2)
+#     burnInNum = 120  # tune the number of burn-in
+#     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)

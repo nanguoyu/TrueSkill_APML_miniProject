@@ -187,6 +187,7 @@ def Q56():
                 p += 1
     print("Solving Q6")
     print("Q6:The accuracy of predicting SeriesA.csv", 100 * p / df.shape[0], "%")
+    return rank1
 
 
 def Q9():

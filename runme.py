@@ -12,5 +12,5 @@ if __name__ == '__main__':
     burnInNum = 120  # tune the number of burn-in
     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
 
-    Q56()
+    rank1 = Q56()
     Q9()

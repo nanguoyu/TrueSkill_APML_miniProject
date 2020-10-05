@@ -155,7 +155,6 @@ def Q56():
         s2 = rank1.loc[rank1.Team == t2, 'skill'].values[0]
         v1 = rank1.loc[rank1.Team == t1, 'variance'].values[0]
         v2 = rank1.loc[rank1.Team == t2, 'variance'].values[0]
-        print(s1, s2, v1, v2)
         m = np.array([s1, s2])
         SN = np.array([[v1, 0], [0, v2]])
         ga = stats.multivariate_normal(mean=m, cov=SN)

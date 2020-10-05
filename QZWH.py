@@ -12,6 +12,7 @@ from matplotlib import pyplot as plt
 import QWD as wd
 import pandas as pd
 
+
 def multiply_gaussian(mean0, var0, mean1, var1):
     # computes the Gaussian distribution N(m,s) being propotional to N(m1,s1)*N(m2,s2)
     #
@@ -24,9 +25,10 @@ def multiply_gaussian(mean0, var0, mean1, var1):
     # t = mean0 + mean1
     # mean = (mean0 * var1 + mean1 * var0) / t
     # var = var0 * var1 / t
-    var = 1/(1/var0 + 1/var1)
-    mean = (mean0/var0 + mean1/var1)*var
+    var = 1 / (1 / var0 + 1 / var1)
+    mean = (mean0 / var0 + mean1 / var1) * var
     return mean, var
+
 
 def divide_gaussian(mean0, var0, mean1, var1):
     # computes the Gaussian distribution N(m,s) being proportional to N(m1,s1)/N(m2,s2)
@@ -39,6 +41,7 @@ def divide_gaussian(mean0, var0, mean1, var1):
     # mean, var: mean and variance of the quotient Gaussian
     mean, var = multiply_gaussian(mean0, var0, mean1, -var1)
     return mean, var
+
 
 def truncated_gaussian(a, b, mean0, var0):
     # computes the mean and variance of a truncated Gaussian distribution
@@ -55,8 +58,8 @@ def truncated_gaussian(a, b, mean0, var0):
     var = truncnorm.var(a_scaled, b_scaled, loc=mean0, scale=np.sqrt(var0))
     return mean, var
 
-def Q8():
 
+def Q8():
     # means and variances for f(s1), f(s2) and f(t)
     mean_s1 = 25
     var_s1 = 8.3
@@ -87,9 +90,9 @@ def Q8():
 
     # Do moment matching of the marginal of t
     if y == 1:
-      a, b = 0, 1000
+        a, b = 0, 1000
     else:
-      a, b = -1000, 0
+        a, b = -1000, 0
 
     pt_mean, pt_var = truncated_gaussian(a, b, mu7_mean, mu7_var)
 
@@ -108,12 +111,8 @@ def Q8():
     p_s1_mean, p_s1_var = multiply_gaussian(mu3_mean, mu3_var, mu9_mean, mu9_var)
     p_s2_mean, p_s2_var = multiply_gaussian(mu5_mean, mu5_var, mu10_mean, mu10_var)
 
-    print(p_s1_mean, p_s1_var)
-    print(p_s2_mean, p_s2_var)
-
-
-    L = 100 # number of samples
-    x = np.linspace(mean_s1-var_s1, mean_s1+var_s1, 100)
+    L = 100  # number of samples
+    x = np.linspace(mean_s1 - var_s1, mean_s1 + var_s1, 100)
 
     s1_pdf = norm.pdf(x, p_s1_mean, np.sqrt(p_s1_var))
     s2_pdf = norm.pdf(x, p_s2_mean, np.sqrt(p_s2_var))
@@ -139,10 +138,10 @@ def Q8():
 
 
 def Q10(rank1):
+    print("Solving Q10")
     path = "./data/"
     filename = "SerieA.csv"
     df = pd.read_csv(path + filename)
-    # rank1 = wd.Q56()
     lastUpdates = {}
     i = 0
     for name in rank1.Team.values:
@@ -211,4 +210,4 @@ def Q10(rank1):
                 rank1.loc[rank1.Team == t2, 'variance'] *= 1 - 0.005 * v2 / abs(s1 - s2)
                 p += 1
 
-    p / df.shape[0]
+    print("Q10:The accuracy of predicting hockey.csv", 100 * p / df.shape[0], "%")

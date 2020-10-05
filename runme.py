@@ -15,6 +15,6 @@ if __name__ == '__main__':
 
     rank1 = Q56()
     Q8()
-    # Q9()
+    Q9()
     Q10(rank1)
 

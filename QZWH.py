@@ -149,6 +149,7 @@ def Q10(rank1):
         i = i + 1
     d = df
     p = 0
+    numOfDraw = 0
     eta = 0.05
     for i in range(len(d)):
         if i == 0:
@@ -158,16 +159,13 @@ def Q10(rank1):
         t1, t2 = d.iloc[i, 2:4].values
         score1, score2 = d.iloc[i, 4:6].values
         if score1 == score2:
+            numOfDraw = numOfDraw+1
             continue
         s1 = rank1.loc[rank1.Team == t1, 'skill'].values[0]
         s2 = rank1.loc[rank1.Team == t2, 'skill'].values[0]
         v1 = rank1.loc[rank1.Team == t1, 'variance'].values[0]
         v2 = rank1.loc[rank1.Team == t2, 'variance'].values[0]
-        m = np.array([s1, s2])
-        SN = np.array([[v1, 0], [0, v2]])
-        ga = stats.multivariate_normal(mean=m, cov=SN)
-        S = ga.rvs(1000)
-        r_pred = np.sign(np.mean(np.sign(S[:, 0] - S[:, 1])))
+        r_pred = 1 if (s1-3*v1) > (s2-3*v2) else -1
         r_true = np.sign(score1 - score2)
         if r_pred == 1:
             if r_true == 1:
@@ -210,4 +208,4 @@ def Q10(rank1):
                 rank1.loc[rank1.Team == t2, 'variance'] *= 1 - 0.005 * v2 / abs(s1 - s2)
                 p += 1
 
-    print("Q10:The accuracy of predicting hockey.csv", 100 * p / df.shape[0], "%")
+    print("Q10:The accuracy of predicting hockey.csv", 100 * p / (df.shape[0]-numOfDraw), "%")

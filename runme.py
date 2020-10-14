@@ -14,7 +14,7 @@ if __name__ == '__main__':
     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
 
     rank1 = Q56()
-    Q8()
+    # Q8()
     Q9()
     Q10(rank1)
 

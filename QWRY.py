@@ -4,7 +4,6 @@
 @Date : 2020/9/29
 """
 
-
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
@@ -12,8 +11,8 @@ import time
 
 
 def BayesianLinearRegression(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, t):
-    S0 = np.mat([[sigma_s1, 0], [0, sigma_s2]])
-    B = sigma_t
+    S0 = np.mat([[sigma_s1 ** 2, 0], [0, sigma_s2 ** 2]])
+    B = 1 / sigma_t ** 2
     X = np.mat([1, -1])
     m0 = np.mat([mu_s1, mu_s2]).T
     y = t
@@ -129,7 +128,7 @@ def prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, mu=25, sigma=8.3, K
     fig.savefig('pnp.png')
 
 
-def Q4_Gibbs(K, sigma_t=0.3):
+def Q4_Gibbs(K, sigma_t=3.3):
     # s1 ~ N(s1; mu, sigma)
     # s2 ~ N(s2; mu, sigma)
     # t ~ N(t; s1-s2, sigma_t)
@@ -145,7 +144,6 @@ def Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K):
     burnIn(burnInNum, S1, S2, E_S1, E_S2, K)
     histo(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
     prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, K)
-
 
 # if __name__ == '__main__':
 #     K = 500  # tune the number of samples

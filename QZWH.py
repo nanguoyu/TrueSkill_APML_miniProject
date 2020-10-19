@@ -14,7 +14,7 @@ import pandas as pd
 
 
 def multiply_gaussian(mean0, var0, mean1, var1):
-    # computes the Gaussian distribution N(m,s) being propotional to N(m1,s1)*N(m2,s2)
+    # computes the Gaussian distribution N(m,s) being proportional to N(m1,s1)*N(m2,s2)
     #
     # Input:
     # mean0, var0: mean and variance of first Gaussian
@@ -23,8 +23,6 @@ def multiply_gaussian(mean0, var0, mean1, var1):
     # Output:
     # mean, var: mean and variance of the product Gaussian
     # t = mean0 + mean1
-    # mean = (mean0 * var1 + mean1 * var0) / t
-    # var = var0 * var1 / t
     var = 1 / (1 / var0 + 1 / var1)
     mean = (mean0 / var0 + mean1 / var1) * var
     return mean, var
@@ -138,6 +136,7 @@ def Q8():
 
 
 def Q10(rank1):
+    # momentum methods insert into prediction method
     print("Solving Q10")
     path = "./data/"
     filename = "SerieA.csv"

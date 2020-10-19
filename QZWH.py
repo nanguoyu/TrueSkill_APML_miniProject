@@ -65,7 +65,7 @@ def Q8():
     var_s1 = 8.3
     mean_s2 = 25
     var_s2 = 8.3
-    var_t = 0.3
+    var_t = 3.3
     y = 1
 
     # Message mu3 from f(s1) to node s1
@@ -155,7 +155,7 @@ def Q10(rank1):
         if i == 0:
             eta = 0
         else:
-            eta = 0.01
+            eta = 0.8
         t1, t2 = d.iloc[i, 2:4].values
         score1, score2 = d.iloc[i, 4:6].values
         if score1 == score2:

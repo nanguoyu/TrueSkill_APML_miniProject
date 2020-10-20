@@ -10,9 +10,9 @@ import scipy.stats as stats
 import time
 
 
-def BayesianLinearRegression(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, t):
-    S0 = np.mat([[sigma_s1 ** 2, 0], [0, sigma_s2 ** 2]])
-    B = 1 / sigma_t ** 2
+def BayesianLinearRegression(mu_s1, mu_s2, sigma_1, sigma_2, sigma_3, t):
+    S0 = np.mat([[sigma_1 ** 2, 0], [0, sigma_2 ** 2]])
+    B = 1 / sigma_3 ** 2
     X = np.mat([1, -1])
     m0 = np.mat([mu_s1, mu_s2]).T
     y = t
@@ -22,8 +22,8 @@ def BayesianLinearRegression(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, t):
     return SN, m
 
 
-def Gibbs(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, y=1, K=100):
-    # Gibbs sampling
+def Gibbs(mu_s1, mu_s2, sigma_1, sigma_2, sigma_3, K=5000, y=1):
+    # Gibbs Sampling
     start_time = time.time()
     T = np.zeros(K)
     S1 = np.zeros(K)
@@ -34,120 +34,109 @@ def Gibbs(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, y=1, K=100):
 
     for i in range(K - 1):
         if y == 1:
-            T[i + 1] = stats.truncnorm.rvs(a=0, b=np.inf, loc=S1[i] - S2[i], scale=sigma_t, size=1)
+            T[i + 1] = stats.truncnorm.rvs(a=0, b=np.inf, loc=S1[i] - S2[i], scale=sigma_3, size=1)
         elif y == -1:
-            T[i + 1] = stats.truncnorm.rvs(a=-np.inf, b=0, loc=S1[i] - S2[i], scale=sigma_t, size=1)
+            T[i + 1] = stats.truncnorm.rvs(a=-np.inf, b=0, loc=S1[i] - S2[i], scale=sigma_3, size=1)
 
-        SN, m = BayesianLinearRegression(mu_s1, mu_s2, sigma_s1, sigma_s2, sigma_t, T[i + 1])
+        SN, m = BayesianLinearRegression(mu_s1, mu_s2, sigma_1, sigma_2, sigma_3, T[i + 1])
         S1[i + 1], S2[i + 1] = stats.multivariate_normal.rvs(mean=np.asarray(m).squeeze(), cov=SN, size=1)
 
     E_S1 = np.zeros(K)
     E_S2 = np.zeros(K)
-    Var_S1 = np.zeros(K)
-    Var_S2 = np.zeros(K)
-    Var_T = np.zeros(K)
-
+    # Var_S1 = np.zeros(K)
+    # Var_S2 = np.zeros(K)
+    # Var_T = np.zeros(K)
     for i in range(1, K):
         E_S1[i] = np.mean(S1[:i])
-        Var_S1[i] = np.var(S1[:i])
+        # Var_S1[i] = np.var(S1[:i])
         E_S2[i] = np.mean(S2[:i])
-        Var_S2[i] = np.var(S1[:i])
-        Var_T[i] = np.var(T[:i])
+        # Var_S2[i] = np.var(S1[:i])
+        # Var_T[i] = np.var(T[:i])
 
     cost_time = time.time() - start_time
     print("--- %s seconds ---" % cost_time)
-    return S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T
+    return S1, S2, T, E_S1, E_S2
 
 
-def recoveryGaussian(mu1, mu2, sigma1, sigma2, sigmat, t):
-    # Answer to Question 4.2, return is a multivariate normal distribution
-    SN, m = BayesianLinearRegression(mu1, mu2, sigma1, sigma2, sigmat, t)
-    ga = stats.multivariate_normal(mean=np.asarray(m).squeeze(), cov=SN)
-    return ga
-
-
-def burnIn(burnInNum, S1, S2, E_S1, E_S2, mu=25, K=100):
+def burnIn(burnInNum, S1, S2, E_S1, E_S2, K, mu=25):
     # Plot the samples of the posterior distributions
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 3))
-    ax1.plot(S1)
-    ax1.plot(S2)
-    ax1.vlines(burnInNum, 18, 32)
-    ax1.legend(['p(s1|y=1)', 'p(s2|y=1)', 'burn in'], loc='upper left', prop={'size': 9})
+    plt.figure(0)
+    plt.plot(S1)
+    plt.plot(S2)
+    plt.vlines(burnInNum, -20, 70)
+    plt.legend(['posterior s1', 'posterior s2', 'burn in'], loc='lower right', prop={'size': 9})
+    plt.savefig('samples.png')
+
+    plt.figure(1)
     # Plot the estimated means of the posterior distributions
-    ax2.plot(E_S1)
-    ax2.plot(E_S2)
-    ax2.vlines(burnInNum, 0, 28)
-    ax2.hlines(mu, 0, K - 1, 'g')
-    ax2.legend(['Estimated mean of S1', 'Estimated mean of S2', 'True mean of S1 & S2'], loc='lower right',
-               prop={'size': 9})
-    fig.savefig('burnIn.png')
+    plt.plot(E_S1)
+    plt.plot(E_S2)
+    plt.hlines(mu, 0, K - 1, 'g')
+    plt.vlines(burnInNum, 0, 45)
+    plt.legend(['Estimated mean of S1', 'Estimated mean of S2', 'Prior mean of S1 & S2', 'previous burn in'],
+               loc="lower right", prop={'size': 9})
+    plt.savefig('burnIn.png')
 
 
-def histo(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K):
-    e_s1, e_s2, v_s1, v_s2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(
-        Var_S2[burnInNum:])
+def approximation(burnInNum, S1, S2, K):
+    # Answer to Question 4.2, returning a Gaussian approximation of the posterior distribution of the skills
+    m_s1, m_s2, v_s1, v_s2 = np.mean(S1[burnInNum:]), np.mean(S2[burnInNum:]), np.var(S1[burnInNum:]), np.var(
+        S2[burnInNum:])
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 3))
-    # Plot the histogram for s1
-    ax1.hist(S1[burnInNum:], bins=20, density=True)
-    # Plot the approximated Gaussian posteriors for s1
-    mu = e_s1
-    sigma = v_s1
+    x1 = np.linspace(m_s1 - 3 * np.sqrt(v_s1), m_s1 + 3 * np.sqrt(v_s1), K - burnInNum)
+    x2 = np.linspace(m_s2 - 3 * np.sqrt(v_s2), m_s2 + 3 * np.sqrt(v_s2), K - burnInNum)
+
+    s1_post = stats.norm.pdf(x1, m_s1, np.sqrt(v_s1))
+    s2_post = stats.norm.pdf(x2, m_s2, np.sqrt(v_s2))
+    return x1, x2, s1_post, s2_post
+
+
+def histo(burnInNum, S1, S2, K):
+    plt.figure(2, figsize=(4.5, 6))
+    x1, x2, s1_post, s2_post = approximation(burnInNum, S1, S2, K)
+    # Plot the histogram for s1 and s2
+    plt.hist(S1[burnInNum:], bins=30, density=True, alpha=0.5)
+    plt.hist(S2[burnInNum:], bins=30, density=True, alpha=0.5)
+    # Plot the approximated Gaussian posteriors for s1 and s2
+    plt.plot(x1, s1_post, color=[0.39, 0.59, 0.80])
+    plt.plot(x2, s2_post, 'orange')
+    plt.legend(['fitted s1', 'fitted s2', 'histogram of s1', 'histogram of s2'], loc='upper right', prop={'size': 9})
+    plt.savefig('histo.png')
+
+
+def prior_n_posterior(burnInNum, S1, S2, K, mu=25, sigma=8.3):
+    x1, x2, s1_post, s2_post = approximation(burnInNum, S1, S2, K)
+    # Plot s1 prior and s2 prior
     x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, K - burnInNum)
-    ax1.plot(x, stats.norm.pdf(x, mu, sigma))
-    ax1.legend(['hist after burn in', 'approximated posterior'], loc='upper right', prop={'size': 9})
-    # Plot the histogram for s2
-    ax2.hist(S2[burnInNum:], bins=20, density=True)
-    # Plot the approximated Gaussian posteriors for s2
-    mu = e_s2
-    sigma = v_s2
-    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, K - burnInNum)
-    ax2.plot(x, stats.norm.pdf(x, mu, sigma))
-    ax2.legend(['hist after burn in', 'approximated posterior'], loc='upper right', prop={'size': 9})
-    fig.savefig('histo.png')
+    plt.figure(3)
+    plt.plot(x, stats.norm.pdf(x, mu, sigma), 'r')
+    # Plot the approximated Gaussian posteriors for s1 and s2
+    plt.plot(x1, s1_post, color=[0.39, 0.59, 0.80])
+    plt.plot(x2, s2_post, 'orange')
+    plt.legend(['prior s1 and s2', 'posterior s1', 'posterior s2'], loc='upper right', prop={'size': 9})
+    plt.savefig('pnp.png')
 
 
-def prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, mu=25, sigma=8.3, K=100):
-    e_s1, e_s2, v_s1, v_s2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(
-        Var_S2[burnInNum:])
-    # Plot s1 prior
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 3))
-    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, K)
-    ax1.plot(x, stats.norm.pdf(x, mu, sigma))
-    # Plot s1 posterior
-    x = np.linspace(e_s1 - 3 * v_s1, e_s1 + 3 * v_s1, K)
-    ax1.plot(x, stats.norm.pdf(x, e_s1, v_s1))
-    ax1.legend(['p(s1)', 'Approximated p(s1|y=1)'], loc='upper right')
-    # Plot s2 prior
-    x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, K)
-    ax2.plot(x, stats.norm.pdf(x, mu, sigma))
-    # Plot s2 posterior
-    x = np.linspace(e_s2 - 3 * v_s2, e_s2 + 3 * v_s2, K)
-    ax2.plot(x, stats.norm.pdf(x, e_s2, v_s2))
-    ax2.legend(['p(s2)', 'Approximated p(s2|y=1)'], loc='upper right')
-    fig.savefig('pnp.png')
-
-
-def Q4_Gibbs(K, sigma_t=3.3):
+def Q4_Gibbs(K, sigma_3=3.3, y=1):
     # s1 ~ N(s1; mu, sigma)
     # s2 ~ N(s2; mu, sigma)
-    # t ~ N(t; s1-s2, sigma_t)
+    # t ~ N(t; s1-s2, sigma_3)
     # y = sign(t)
     mu = 25
     sigma = 8.3
+    S1, S2, T, E_S1, E_S2 = Gibbs(mu, mu, sigma, sigma, sigma_3, K, y)
+    return S1, S2, T, E_S1, E_S2
 
-    S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T = Gibbs(mu, mu, sigma, sigma, sigma_t, 1, K)
-    return S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T
 
-
-def Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K):
+def Q4_plot(burnInNum, S1, S2, E_S1, E_S2, K):
     burnIn(burnInNum, S1, S2, E_S1, E_S2, K)
-    histo(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
-    prior_n_posterior(burnInNum, E_S1, E_S2, Var_S1, Var_S2, K)
+    histo(burnInNum, S1, S2, K)
+    prior_n_posterior(burnInNum, S1, S2, K)
+
 
 # if __name__ == '__main__':
-#     K = 500  # tune the number of samples
-#     S1, S2, T, E_S1, E_S2, Var_S1, Var_S2, Var_T = Q4_Gibbs(K, 1)
-
-#     burnInNum = 120  # tune the number of burn-in
-#     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, Var_S1, Var_S2, K)
+#     K = 5000  # number of samples
+#     S1, S2, T, E_S1, E_S2 = Q4_Gibbs(K)
+# 
+#     burnInNum = 2200  # tune the number of burn-in
+#     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, K)

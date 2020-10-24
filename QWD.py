@@ -19,8 +19,8 @@ mu_s2 = 25
 segma_s1 = 8.3
 segma_s2 = 8.3
 segma_t = 3.3
-K = 500
-burnInNum = 180
+K = 5000
+burnInNum = 2200
 
 
 # HelpFunction for Gibbs

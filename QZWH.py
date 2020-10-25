@@ -14,7 +14,7 @@ import pandas as pd
 
 
 def multiply_gaussian(mean0, var0, mean1, var1):
-    # computes the Gaussian distribution N(m,s) being propotional to N(m1,s1)*N(m2,s2)
+    # computes the Gaussian distribution N(m,s) being proportional to N(m1,s1)*N(m2,s2)
     #
     # Input:
     # mean0, var0: mean and variance of first Gaussian
@@ -23,8 +23,6 @@ def multiply_gaussian(mean0, var0, mean1, var1):
     # Output:
     # mean, var: mean and variance of the product Gaussian
     # t = mean0 + mean1
-    # mean = (mean0 * var1 + mean1 * var0) / t
-    # var = var0 * var1 / t
     var = 1 / (1 / var0 + 1 / var1)
     mean = (mean0 / var0 + mean1 / var1) * var
     return mean, var
@@ -62,10 +60,10 @@ def truncated_gaussian(a, b, mean0, var0):
 def Q8():
     # means and variances for f(s1), f(s2) and f(t)
     mean_s1 = 25
-    var_s1 = 8.3
+    var_s1 = 8.3**2
     mean_s2 = 25
-    var_s2 = 8.3
-    var_t = 3.3
+    var_s2 = 8.3**2
+    var_t = 3.3**2
     y = 1
 
     # Message mu3 from f(s1) to node s1
@@ -112,10 +110,11 @@ def Q8():
     p_s2_mean, p_s2_var = multiply_gaussian(mu5_mean, mu5_var, mu10_mean, mu10_var)
 
     L = 100  # number of samples
-    x = np.linspace(mean_s1 - var_s1, mean_s1 + var_s1, 100)
+    x = np.linspace(mean_s1 - 3 * np.sqrt(var_s1), mean_s1 + 3 * np.sqrt(var_s1), 100)
+    y = np.linspace(mean_s2 - 3 * np.sqrt(var_s2), mean_s2 + 3 * np.sqrt(var_s2), 100)
 
     s1_pdf = norm.pdf(x, p_s1_mean, np.sqrt(p_s1_var))
-    s2_pdf = norm.pdf(x, p_s2_mean, np.sqrt(p_s2_var))
+    s2_pdf = norm.pdf(y, p_s2_mean, np.sqrt(p_s2_var))
 
     S1 = np.load('./data/s1.npy')
     S2 = np.load('./data/s2.npy')
@@ -138,6 +137,7 @@ def Q8():
 
 
 def Q10(rank1):
+    # momentum methods insert into prediction method
     print("Solving Q10")
     path = "./data/"
     filename = "SerieA.csv"

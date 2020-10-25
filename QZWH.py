@@ -60,10 +60,10 @@ def truncated_gaussian(a, b, mean0, var0):
 def Q8():
     # means and variances for f(s1), f(s2) and f(t)
     mean_s1 = 25
-    var_s1 = 8.3
+    var_s1 = 8.3**2
     mean_s2 = 25
-    var_s2 = 8.3
-    var_t = 3.3
+    var_s2 = 8.3**2
+    var_t = 3.3**2
     y = 1
 
     # Message mu3 from f(s1) to node s1
@@ -110,10 +110,11 @@ def Q8():
     p_s2_mean, p_s2_var = multiply_gaussian(mu5_mean, mu5_var, mu10_mean, mu10_var)
 
     L = 100  # number of samples
-    x = np.linspace(mean_s1 - var_s1, mean_s1 + var_s1, 100)
+    x = np.linspace(mean_s1 - 3 * np.sqrt(var_s1), mean_s1 + 3 * np.sqrt(var_s1), 100)
+    y = np.linspace(mean_s2 - 3 * np.sqrt(var_s2), mean_s2 + 3 * np.sqrt(var_s2), 100)
 
     s1_pdf = norm.pdf(x, p_s1_mean, np.sqrt(p_s1_var))
-    s2_pdf = norm.pdf(x, p_s2_mean, np.sqrt(p_s2_var))
+    s2_pdf = norm.pdf(y, p_s2_mean, np.sqrt(p_s2_var))
 
     S1 = np.load('./data/s1.npy')
     S2 = np.load('./data/s2.npy')

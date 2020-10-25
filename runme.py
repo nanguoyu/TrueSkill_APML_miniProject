@@ -21,4 +21,3 @@ if __name__ == '__main__':
     Q9()
     rank1.to_csv('./data/rank1.csv')
     Q10(pd.read_csv('./data/rank1.csv'))
-

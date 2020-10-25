@@ -10,6 +10,7 @@ from scipy.stats import truncnorm
 from scipy.stats import norm
 from matplotlib import pyplot as plt
 import QWD as wd
+from QWRY import histo, approximation
 import pandas as pd
 
 
@@ -88,9 +89,9 @@ def Q8():
 
     # Do moment matching of the marginal of t
     if y == 1:
-        a, b = 0, 1000
+        a, b = 0, np.inf
     else:
-        a, b = -1000, 0
+        a, b = -np.inf, 0
 
     pt_mean, pt_var = truncated_gaussian(a, b, mu7_mean, mu7_var)
 
@@ -119,21 +120,50 @@ def Q8():
     S1 = np.load('./data/s1.npy')
     S2 = np.load('./data/s2.npy')
 
-    plt.close()
-    plt.figure()
-    plt.hist(S1, label="s1, Gibbs Sampling", bins=50, density=True)
-    plt.title("s1 message passing")
-    plt.plot(x, s1_pdf, linewidth=2, label="s1 message passing")
-    plt.legend()
-    plt.savefig('s1message.png')
+    burnInNum = 2200
+    K = 5000
 
-    plt.close()
-    plt.figure()
-    plt.hist(S2, label="s2, Gibbs Sampling", bins=50, density=True)
-    plt.title("s2 message passing")
-    plt.plot(x, s2_pdf, linewidth=2, label="s2 message passing")
-    plt.legend()
-    plt.savefig('s2message.png')
+    m_s1, m_s2, v_s1, v_s2 = np.mean(S1[burnInNum:]), np.mean(S2[burnInNum:]), np.var(S1[burnInNum:]), np.var(
+        S2[burnInNum:])
+    x1 = np.linspace(m_s1 - 3 * np.sqrt(v_s1), m_s1 + 3 * np.sqrt(v_s1), K - burnInNum)
+    x2 = np.linspace(m_s2 - 3 * np.sqrt(v_s2), m_s2 + 3 * np.sqrt(v_s2), K - burnInNum)
+
+    s1_post = stats.norm.pdf(x1, m_s1, np.sqrt(v_s1))
+    s2_post = stats.norm.pdf(x2, m_s2, np.sqrt(v_s2))
+
+    plt.figure(8)
+
+    # Plot the histogram for s1 and s2
+    plt.hist(S1[burnInNum:], bins=30, density=True, alpha=0.5)
+    plt.hist(S2[burnInNum:], bins=30, density=True, alpha=0.5)
+
+    # Plot the message passing distribution
+    plt.plot(x, s1_pdf, linewidth=2, label="s1 message passing")
+    plt.plot(y, s2_pdf, linewidth=2, label="s2 message passing")
+    # Plot the approximated Gaussian posteriors for s1 and s2
+    plt.plot(x1, s1_post, color=[0.39, 0.59, 0.80])
+    plt.plot(x2, s2_post, 'orange')
+
+    plt.legend(['s1 message passing', 's2 message passing','fitted s1', 'fitted s2', 'histogram of s1', 'histogram of s2'], loc='upper right', prop={'size': 9})
+    plt.savefig('Q8.png')
+
+    # plt.close()
+    # plt.figure()
+    # plt.plot(x1, s1_post, color=[0.39, 0.59, 0.80])
+    # plt.plot(x2, s2_post, 'orange')
+    # plt.hist(S1, label="s1, Gibbs Sampling", bins=50, density=True)
+    # plt.title("s1 message passing")
+    # plt.plot(x, s1_pdf, linewidth=2, label="s1 message passing")
+    # plt.legend()
+    # plt.savefig('s1message.png')
+    #
+    # plt.close()
+    # plt.figure()
+    # plt.hist(S2, label="s2, Gibbs Sampling", bins=50, density=True)
+    # plt.title("s2 message passing")
+    # plt.plot(x, s2_pdf, linewidth=2, label="s2 message passing")
+    # plt.legend()
+    # plt.savefig('s2message.png')
 
 
 def Q10(rank1):

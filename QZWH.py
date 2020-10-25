@@ -99,11 +99,11 @@ def Q8():
 
     # Message mu9 from factor f(t) to node s1
     mu9_mean = mu6_mean + mu8_mean
-    mu9_var = 1 + mu8_var + var_s2
+    mu9_var = var_t + mu8_var + var_s2
 
     # Message mu10 from factor f(t) to node s2
     mu10_mean = mu4_mean - mu8_mean
-    mu10_var = 1 + mu8_var + var_s1
+    mu10_var = var_t + mu8_var + var_s1
 
     # Compute the marginal of s1
     p_s1_mean, p_s1_var = multiply_gaussian(mu3_mean, mu3_var, mu9_mean, mu9_var)
@@ -124,7 +124,7 @@ def Q8():
     plt.hist(S1, label="s1, Gibbs Sampling", bins=50, density=True)
     print(p_s1_mean)
     plt.title("s1 message passing")
-    plt.plot(x, 1/np.sqrt(2*p_s1_var*np.pi)*np.exp(-.5*((x-p_s1_mean)/np.sqrt(p_s1_var))))
+    #plt.plot(x, 1/np.sqrt(2*p_s1_var*np.pi)*np.exp(-.5*((x-p_s1_mean)/np.sqrt(p_s1_var))))
     plt.plot(x, s1_pdf, linewidth=2, label="s1 message passing")
     plt.legend()
     plt.savefig('s1message.png')

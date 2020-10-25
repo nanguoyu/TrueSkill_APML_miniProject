@@ -117,7 +117,7 @@ def prior_n_posterior(burnInNum, S1, S2, K, mu=25, sigma=8.3):
     plt.savefig('pnp.png')
 
 
-def Q4_Gibbs(K, sigma_3=3.3, y=1):
+def Q4_Gibbs(K, sigma_3=3.3**2, y=1):
     # s1 ~ N(s1; mu, sigma)
     # s2 ~ N(s2; mu, sigma)
     # t ~ N(t; s1-s2, sigma_3)

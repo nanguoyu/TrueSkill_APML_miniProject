@@ -90,7 +90,7 @@ def run(d, skills):
         v1 = skills.loc[skills.Team == t1, 'variance'].values[0]
         v2 = skills.loc[skills.Team == t2, 'variance'].values[0]
         # , T, E_S1, E_S2, Var_S1, Var_S2, Var_T
-        S1, S2 = Gibbs(mu_s1=s1, mu_s2=s2, segma_s1=v1, segma_s2=v2, segma_t=3.3, y=np.sign(score1 - score2))
+        S1, S2 = Gibbs(mu_s1=s1, mu_s2=s2, segma_s1=v1, segma_s2=v2, segma_t=3.3**2, y=np.sign(score1 - score2))
         # es1, es2, em1, em2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(Var_S2[burnInNum:])
         es1 = np.mean(S1[burnInNum:])
         es2 = np.mean(S2[burnInNum:])
@@ -118,7 +118,7 @@ def run2(d, skills):
         v1 = skills.loc[skills.Team == t1, 'variance'].values[0]
         v2 = skills.loc[skills.Team == t2, 'variance'].values[0]
         #, T, E_S1, E_S2, Var_S1, Var_S2, Var_T
-        S1, S2 = Gibbs(mu_s1=s1, mu_s2=s2, segma_s1=v1, segma_s2=v2, segma_t=3.3,
+        S1, S2 = Gibbs(mu_s1=s1, mu_s2=s2, segma_s1=v1, segma_s2=v2, segma_t=3.3**2,
                                                              y=np.sign(score1 - score2))
         # es1, es2, em1, em2 = np.mean(E_S1[burnInNum:]), np.mean(E_S2[burnInNum:]), np.mean(Var_S1[burnInNum:]), np.mean(Var_S2[burnInNum:])
         es1 = np.mean(S1[burnInNum:])

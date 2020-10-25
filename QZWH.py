@@ -99,11 +99,11 @@ def Q8():
 
     # Message mu9 from factor f(t) to node s1
     mu9_mean = mu6_mean + mu8_mean
-    mu9_var = 1 + mu8_var + var_s2
+    mu9_var = var_t + mu8_var + var_s2
 
     # Message mu10 from factor f(t) to node s2
     mu10_mean = mu4_mean - mu8_mean
-    mu10_var = 1 + mu8_var + var_s1
+    mu10_var = var_t + mu8_var + var_s1
 
     # Compute the marginal of s1
     p_s1_mean, p_s1_var = multiply_gaussian(mu3_mean, mu3_var, mu9_mean, mu9_var)

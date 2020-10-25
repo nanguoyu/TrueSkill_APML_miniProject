@@ -88,9 +88,9 @@ def Q8():
 
     # Do moment matching of the marginal of t
     if y == 1:
-        a, b = 0, 1000
+        a, b = 0, np.inf
     else:
-        a, b = -1000, 0
+        a, b = -np.inf, 0
 
     pt_mean, pt_var = truncated_gaussian(a, b, mu7_mean, mu7_var)
 
@@ -122,7 +122,9 @@ def Q8():
     plt.close()
     plt.figure()
     plt.hist(S1, label="s1, Gibbs Sampling", bins=50, density=True)
+    print(p_s1_mean)
     plt.title("s1 message passing")
+    plt.plot(x, 1/np.sqrt(2*p_s1_var*np.pi)*np.exp(-.5*((x-p_s1_mean)/np.sqrt(p_s1_var))))
     plt.plot(x, s1_pdf, linewidth=2, label="s1 message passing")
     plt.legend()
     plt.savefig('s1message.png')
@@ -130,6 +132,7 @@ def Q8():
     plt.close()
     plt.figure()
     plt.hist(S2, label="s2, Gibbs Sampling", bins=50, density=True)
+    print(p_s2_mean)
     plt.title("s2 message passing")
     plt.plot(x, s2_pdf, linewidth=2, label="s2 message passing")
     plt.legend()

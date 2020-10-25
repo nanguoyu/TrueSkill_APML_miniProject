@@ -13,12 +13,12 @@ if __name__ == '__main__':
     burnInNum = 2200  # tune the number of burn-in
     Q4_plot(burnInNum, S1, S2, E_S1, E_S2, K)
     
-    np.save('./data/s1', S1[150:])
-    np.save('./data/s2', S2[150:])
+    np.save('./data/s1', S1[burnInNum:])
+    np.save('./data/s2', S2[burnInNum:])
 
     rank1 = Q56()
     Q8()
-    Q9()
-    rank1.to_csv('./data/rank1.csv')
-    Q10(pd.read_csv('./data/rank1.csv'))
+    #Q9()
+    #rank1.to_csv('./data/rank1.csv')
+    #Q10(pd.read_csv('./data/rank1.csv'))
 
